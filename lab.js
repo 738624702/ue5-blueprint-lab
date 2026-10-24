@@ -10,7 +10,7 @@
   const btn = (action, label, extra='') => `<button type="button" class="lab-btn ${extra}" data-action="${action}">${label}</button>`;
   const panel = (content) => `${content}${note}`;
   const templates = {
-    'first-blueprint': panel(`<div class="lab-status"><span>Event BeginPlay → Print String</span><strong id="lab-output">尚未触发</strong></div><div class="lab-controls">${btn('run','▶ 模拟运行 BeginPlay','lab-primary')}${btn('clear','清空输出')}</div>`),
+    'first-blueprint': panel(`<div class="lab-status"><span>Event BeginPlay → Print String</span><strong id="lab-output">尚未触发</strong></div><div class="lab-controls">${btn('run','模拟运行 BeginPlay','lab-primary')}${btn('clear','清空输出')}</div>`),
     'character-move': panel(`<div class="lab-status"><span>输入动作 IA_Move (Axis2D)</span><strong id="lab-output">X = 0，Y = 0 · 未输入</strong></div><div class="lab-pad"><div></div>${btn('w','W · 前')}<div></div>${btn('a','A · 左')}${btn('neutral','停止')}${btn('d','D · 右')}<div></div>${btn('s','S · 后')}<div></div></div><p class="lab-detail" id="lab-detail">方向只是输入意图；Add Movement Input 再根据朝向推动角色移动。</p>`),
     'camera-follow': panel(`<label class="lab-range-label" for="camera-length">Target Arm Length <strong id="camera-length-out">350 cm</strong></label><input id="camera-length" type="range" min="150" max="500" step="50" value="350"/><div class="camera-track"><span class="camera-avatar">角色</span><span id="camera-arm" class="camera-arm"></span><span class="camera-eye">摄像机</span></div><p id="lab-output" class="lab-detail">摄像机与角色目标距离：350 cm。实际引擎中墙体碰撞可能让距离变短。</p>`),
     'character-jump': panel(`<div class="lab-status"><span>CharacterMovement 状态</span><strong id="lab-output">Walking · 已落地</strong></div><div class="lab-controls">${btn('jump','空格 / Jump','lab-primary')}${btn('land','模拟落地')}</div><p class="lab-detail">Jump 请求起跳；是否在空中由 CharacterMovement 判断，不是直接修改坐标。</p>`),
@@ -31,7 +31,7 @@
     if (!el) return;
     const action=el.dataset.action;
     switch(action){
-      case 'run': setOut('Hello Blueprint! ✓'); break;
+      case 'run': setOut('Hello Blueprint!'); break;
       case 'clear': setOut('尚未触发'); break;
       case 'w': case 'a': case 's': case 'd': case 'neutral': {
         const points={w:[0,1,'前进'],s:[0,-1,'后退'],a:[-1,0,'左移'],d:[1,0,'右移'],neutral:[0,0,'未输入']};
@@ -87,6 +87,7 @@
       if(Number(el.dataset.answer)===q.right)el.classList.add('correct');
       if(el===button&&!correct)el.classList.add('incorrect');
     });
-    quiz.querySelector('#quiz-feedback').textContent=`${correct?'回答正确 ✓':'还差一点。'} ${q.why}`;
+    quiz.querySelector('#quiz-feedback').textContent=`${correct?'回答正确 ':'还差一点。'} ${q.why}`;
   });
 })();
+

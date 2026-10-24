@@ -7,14 +7,17 @@
   function completed(id){ try{return JSON.parse(localStorage.getItem('blueprintlab:v1:'+id)||'[]')}catch{return []} }
   function save(id,arr){try{localStorage.setItem('blueprintlab:v1:'+id,JSON.stringify(arr))}catch{/* Browser storage is optional */}}
   function progress(course){const done=completed(course.id);return Math.round((done.filter((v)=>v===true).length/course.steps.length)*100)}
-  function card(course){return `<a class="course-card" href="lesson.html?id=${encodeURIComponent(course.id)}"><div class="card-meta"><span class="pill">${esc(course.module)}</span><span>${esc(course.level)}</span><span>·</span><span>约 ${course.minutes} 分钟</span></div><h3>${esc(course.title)}</h3><p>${esc(course.description)}</p><div class="course-bottom"><span>${progress(course) ? `已学习 ${progress(course)}%` : '尚未开始'}</span><strong>进入课程 ↗</strong></div></a>`}
+  function card(course){return `<a class="course-card" href="lesson.html?id=${encodeURIComponent(course.id)}"><div class="course-identity"><span class="card-meta">${esc(course.module)} · ${esc(course.level)}</span><h3>${esc(course.title)}</h3><p>${esc(course.description)}</p></div><span class="course-state">${progress(course)?'已学习 '+progress(course)+'%':'约 '+course.minutes+' 分钟'}</span><span class="course-arrow" aria-hidden="true">→</span></a>`}
+  function homeSummary(lead,any,finished,doneSteps,totalSteps){return `<section class="focus-lesson"><div class="focus-context"><span>${any?'接着上次的练习':'从第一节实战开始'}</span><span>约 ${lead.minutes} 分钟</span></div><h2>${esc(lead.title)}</h2><p>${esc(lead.description)}</p><div class="execution-preview"><span>本课的节点与结果</span><ol>${lead.nodes.slice(0,3).map(n=>'<li><small>'+esc(n.type)+'</small><strong>'+esc(n.label)+'</strong></li>').join('')}</ol></div><div class="focus-bottom"><span>${lead.steps.length} 个操作步骤 · 课后自测</span><a class="btn btn-primary" href="lesson.html?id=${encodeURIComponent(lead.id)}">${any?'继续学习':'进入第一课'} <span aria-hidden="true">→</span></a></div></section><section class="practice-record"><h2>练习记录</h2><div class="record-value">${finished}<small> / ${courses.length} 节课程已完成</small></div><progress value="${doneSteps}" max="${totalSteps}" aria-label="已完成操作步骤"></progress><dl><div><dt>已确认操作步骤</dt><dd>${doneSteps}<small> / ${totalSteps}</small></dd></div><div><dt>正在练习的课程</dt><dd>${courses.filter(c=>progress(c)>0&&progress(c)<100).length}</dd></div></dl><p>进度保存在当前浏览器。<br>每一步都留待你在 UE 中确认。</p><a href="courses.html">查看全部课程 <span aria-hidden="true">→</span></a></section>`}
   if(page==='home'){
-    const target=$('#home-courses');if(target) target.innerHTML=courses.slice(0,3).map(card).join('');
+    const target=$('#home-courses');if(target) target.innerHTML=courses.map(card).join('');
     const summary=$('#learning-return');
     if(summary){
       const any=courses.some(c=>progress(c)>0),next=courses.find(c=>progress(c)>0&&progress(c)<100)||courses.find(c=>progress(c)<100)||courses[0];
       const finished=courses.filter(c=>progress(c)===100).length;
-      summary.innerHTML=`<div><div class="kicker">YOUR LEARNING TRACK</div><h2>${any?'接着上次继续':'你的第一条学习路线'}</h2><p>${any?`已完成 ${finished}/${courses.length} 节课程。你的学习记录保存在当前浏览器。`:'从第一个 BeginPlay 开始，之后逐步进入人物系统。所有练习都能先在手机上做概念模拟。'}</p></div><a class="btn btn-primary" href="lesson.html?id=${encodeURIComponent(next.id)}">${any?'继续：':'开始：'}${esc(next.title)} →</a>`;
+      const doneSteps=courses.reduce((s,c)=>s+c.steps.filter((_,i)=>completed(c.id)[i]===true).length,0);
+      const totalSteps=courses.reduce((s,c)=>s+c.steps.length,0);
+      summary.innerHTML=homeSummary(next,any,finished,doneSteps,totalSteps);
     }
   }
   if(page==='courses'){
@@ -34,6 +37,8 @@
     draw();
   }
   if(page==='lesson'){
+    const curriculum=$('.curriculum');
+    if(curriculum){const desktop=window.matchMedia('(min-width:961px)');curriculum.open=desktop.matches;desktop.addEventListener('change',event=>{curriculum.open=event.matches})}
     const requested=new URLSearchParams(location.search).get('id')||'first-blueprint';
     const lesson=courses.find(c=>c.id===requested)||courses[0];
     if(!lesson) return;
@@ -44,14 +49,14 @@
     const steps=completed(lesson.id);
     const next=courses[courses.findIndex(c=>c.id===lesson.id)+1];
     content.innerHTML=`<div class="crumbs"><a href="courses.html">全部课程</a><span>›</span>${esc(lesson.module)}<span>›</span>当前课程</div>
-      <section class="lesson-head"><div class="kicker">${esc(lesson.badge)}</div><h1>${esc(lesson.title)}</h1><p>${esc(lesson.description)}</p><div class="lesson-meta"><span class="pill">${esc(lesson.level)}</span><span>◷ 约 ${lesson.minutes} 分钟</span><span>·</span><span>${lesson.steps.length} 个操作步骤</span><span id="step-progress">· 完成 ${steps.filter(Boolean).length}/${lesson.steps.length}</span></div></section>
-      <section class="lesson-block"><h2>01 / 这一课要做什么</h2><div class="note"><strong>验收目标：</strong>${esc(lesson.outcome)}<br><strong>准备工作：</strong>${esc(lesson.premise)}</div></section>
-      <section class="lesson-block"><h2>02 / 先理解逻辑</h2><p>${esc(lesson.concept)}</p><div class="logic-canvas" style="margin-top:18px"><div class="logic-top"><span>BLUEPRINT / 逻辑连接示意</span><span class="desktop-flow-label">由左向右执行 →</span><span class="mobile-flow-label">由上向下执行 ↓</span></div><div class="logic-flow">${lesson.nodes.map((n,i)=>`${i?'<div class="logic-line" aria-hidden="true"></div>':''}<div class="logic-node"><div class="logic-node-head">${esc(n.type)}</div><strong>${esc(n.label)}</strong><p>${esc(n.desc)}</p></div>`).join('')}</div><div class="canvas-foot">提示：这是帮助理解的流程示意，不是 UE5 编辑器的逐引脚截图。请根据下方操作步骤实际连接节点。</div></div></section>
-      <section class="lesson-block"><h2>02B / 手机逻辑实验台</h2><p>先点击模拟控件，理解输入、条件和输出会发生什么变化。</p><div class="lab-widget" id="lesson-lab" aria-label="可交互逻辑模拟"></div></section>
-      <section class="lesson-block"><h2>03 / 跟着操作</h2><p style="margin:0 0 18px">每做完一步，勾选左侧方框。勾选状态保存在当前浏览器，不需要登录。</p><div class="step-list">${lesson.steps.map((s,i)=>`<div class="lesson-step ${steps[i]?'done':''}"><input class="step-check" type="checkbox" id="step-${i}" data-step="${i}" ${steps[i]?'checked':''} aria-label="完成步骤 ${i+1}：${esc(s.title)}"><div class="step-copy"><h3><label for="step-${i}">步骤 ${String(i+1).padStart(2,'0')} · ${esc(s.title)}</label></h3><p>${esc(s.body)}</p><aside>💡 ${esc(s.help)}</aside></div></div>`).join('')}</div></section>
-      <section class="lesson-block"><h2>04 / 关键参数</h2><div style="overflow-x:auto"><table class="parameter-table"><thead><tr><th>名称</th><th>示例值</th><th>作用</th></tr></thead><tbody>${lesson.params.map(row=>`<tr>${row.map(cell=>`<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
-      <section class="lesson-block"><h2>05 / 遇到问题怎么办</h2><div>${lesson.pitfalls.map(row=>`<div class="faq-item"><strong>Q：${esc(row[0])}</strong><p>A：${esc(row[1])}</p></div>`).join('')}</div></section>
-      <section class="lesson-block"><h2>06 / 一道自测题</h2><div id="lesson-quiz" class="quiz-widget"></div></section>
+      <section class="lesson-head"><p class="lesson-context">${esc(lesson.module)} · ${esc(lesson.badge)}</p><h1>${esc(lesson.title)}</h1><p>${esc(lesson.description)}</p><div class="lesson-meta"><span class="pill">${esc(lesson.level)}</span><span>◷ 约 ${lesson.minutes} 分钟</span><span>·</span><span>${lesson.steps.length} 个操作步骤</span><span id="step-progress">· 完成 ${steps.filter(Boolean).length}/${lesson.steps.length}</span></div></section>
+      <section class="lesson-block"><h2>这一课要做什么</h2><div class="note"><strong>验收目标：</strong>${esc(lesson.outcome)}<br><strong>准备工作：</strong>${esc(lesson.premise)}</div></section>
+      <section class="lesson-block"><h2>先理解逻辑</h2><p>${esc(lesson.concept)}</p><div class="logic-canvas" style="margin-top:18px"><div class="logic-top"><span>蓝图执行路径</span><span class="desktop-flow-label">由左向右执行 →</span><span class="mobile-flow-label">由上向下执行 ↓</span></div><div class="logic-flow">${lesson.nodes.map((n,i)=>`${i?'<div class="logic-line" aria-hidden="true"></div>':''}<div class="logic-node"><div class="logic-node-head">${esc(n.type)}</div><strong>${esc(n.label)}</strong><p>${esc(n.desc)}</p></div>`).join('')}</div><div class="canvas-foot">提示：这是帮助理解的流程示意，不是 UE5 编辑器的逐引脚截图。请根据下方操作步骤实际连接节点。</div></div></section>
+      <section class="lesson-block"><h2>手机逻辑实验台</h2><p>先点击模拟控件，理解输入、条件和输出会发生什么变化。</p><div class="lab-widget" id="lesson-lab" aria-label="可交互逻辑模拟"></div></section>
+      <section class="lesson-block"><h2>跟着操作</h2><p style="margin:0 0 18px">每做完一步，勾选左侧方框。勾选状态保存在当前浏览器，不需要登录。</p><div class="step-list">${lesson.steps.map((s,i)=>`<div class="lesson-step ${steps[i]?'done':''}"><input class="step-check" type="checkbox" id="step-${i}" data-step="${i}" ${steps[i]?'checked':''} aria-label="完成步骤 ${i+1}：${esc(s.title)}"><div class="step-copy"><h3><label for="step-${i}">${i+1}. ${esc(s.title)}</label></h3><p>${esc(s.body)}</p><aside>${esc(s.help)}</aside></div></div>`).join('')}</div></section>
+      <section class="lesson-block"><h2>关键参数</h2><div style="overflow-x:auto"><table class="parameter-table"><thead><tr><th>名称</th><th>示例值</th><th>作用</th></tr></thead><tbody>${lesson.params.map(row=>`<tr>${row.map(cell=>`<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+      <section class="lesson-block"><h2>遇到问题怎么办</h2><div>${lesson.pitfalls.map(row=>`<div class="faq-item"><strong>Q：${esc(row[0])}</strong><p>A：${esc(row[1])}</p></div>`).join('')}</div></section>
+      <section class="lesson-block"><h2>一道自测题</h2><div id="lesson-quiz" class="quiz-widget"></div></section>
       <div id="completion" class="completion"><div><h3>最后一步：检查效果</h3><p>${esc(lesson.check)}</p></div><a class="btn btn-secondary" href="${next?'lesson.html?id='+encodeURIComponent(next.id):'courses.html'}">${next?'下一节课 →':'返回课程目录 →'}</a></div>`;
     function redraw(){
       const values=completed(lesson.id);const num=values.filter(Boolean).length;const pct=Math.round(num/lesson.steps.length*100);
@@ -70,3 +75,4 @@
     redraw();
   }
 })();
+
