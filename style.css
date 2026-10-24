@@ -54,3 +54,61 @@
   .lab-status strong{font-size:19px}
   .lab-pad{grid-template-columns:repeat(3,minmax(0,94px))}
 }
+
+
+/* v0.2.1 mobile layout fix: keep all lesson content inside the viewport.
+   The former auto min-width of the grid article inherited .logic-flow's
+   max-content width and stretched the entire page to 1282px on phones. */
+.lesson-layout > article,
+.lesson-layout > .lesson-sidebar,
+.lesson-head,
+.lesson-block,
+.lesson-step,
+.step-copy,
+.logic-canvas,
+.lab-widget,
+.quiz-widget {
+  min-width:0;
+  max-width:100%;
+}
+.lesson-block,.step-copy,.faq-item,.note,.lab-detail {overflow-wrap:anywhere}
+.logic-canvas {overscroll-behavior-inline:contain}
+.lab-widget .lab-controls > * {min-width:0}
+.logic-top .mobile-flow-label{display:none}
+
+@media(max-width:680px){
+  /* Do not let intrinsic sizes of blueprint nodes determine the page width. */
+  .lesson-layout {grid-template-columns:minmax(0,1fr)}
+  .lesson-layout > article {width:100%;min-width:0}
+  .lesson-block h2 {font-size:20px;line-height:1.45}
+  .lesson-block p {line-height:1.85}
+  .logic-canvas {padding:14px;overflow-x:hidden}
+  .logic-top {gap:4px;flex-wrap:wrap;align-items:center}
+  .logic-top .desktop-flow-label{display:none}
+  .logic-top .mobile-flow-label{display:inline}
+  .logic-flow {flex-direction:column;min-width:0;width:100%;gap:0;padding:4px 0 14px}
+  .logic-node {width:100%;max-width:100%;align-self:stretch}
+  .logic-node-head {font-size:12px;padding:8px 10px}
+  .logic-node strong {font-size:13px}
+  .logic-node p {font-size:12px}
+  .logic-line {width:2px;height:28px;flex-shrink:0}
+  .logic-line:after {content:'▼';right:-6px;top:12px;font-size:12px}
+  .lab-controls {display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+  .lab-controls .lab-btn {width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;flex:auto}
+  .lab-pad {width:100%;max-width:310px;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .lab-pad .lab-btn {width:100%;min-width:0}
+  .camera-track {max-width:100%;min-width:0}
+  .quiz-option {width:100%;overflow-wrap:anywhere}
+  .lesson-step {padding:14px}
+  .step-copy p,.step-copy aside {overflow-wrap:anywhere}
+  .parameter-table {min-width:420px}
+  .completion .btn {width:100%;white-space:normal;text-align:center}
+}
+@media(max-width:380px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .lesson-layout{gap:18px}
+  .nav{gap:8px}
+  .nav-action{font-size:11px;padding:7px 8px}
+  .logic-canvas,.lab-widget,.quiz-widget{padding:12px}
+  .lab-status strong{font-size:17px}
+}
