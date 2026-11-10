@@ -3,6 +3,7 @@
 'use strict';
 if(!window.BlueprintLesson)return;
 const {lesson}=window.BlueprintLesson,{esc}=window.BlueprintUI,id=lesson.id,lab=document.querySelector('#lesson-lab');
+if(id==='season-challenge-ui'){window.SeasonProject.mountLab(lab);return;}
 const button=(action,label)=>`<button type="button" class="lab-btn" data-action="${action}">${label}</button>`;
 const avatar='<span class="demo-avatar" aria-hidden="true"><svg viewBox="0 0 40 64" fill="none"><circle cx="20" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M9 33c0-15 22-15 22 0v15H9zM14 48v12m12-12v12" stroke="currentColor" stroke-width="2"/></svg></span>';
 const scenes={

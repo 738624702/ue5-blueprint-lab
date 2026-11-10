@@ -1,0 +1,12 @@
+{
+  "file": "SeasonChallenge_UI_UE584.zip",
+  "bytes": 19640190,
+  "sha256": "c138bc67640f7bbe719d6dabee0cd52578fac1c830455d374ab2541ae01499c1",
+  "entries": 142,
+  "engine": "5.8.4",
+  "sourceArt": {
+    "file": "SeasonChallenge_SourceArt.zip",
+    "bytes": 5729151,
+    "sha256": "72e981bff6d0a804b6748a59bb0e5f1c41bc04f3a5283d7bcbe669e7a64a3d39"
+  }
+}

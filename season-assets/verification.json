@@ -1,0 +1,78 @@
+{
+  "project": "SeasonChallenge_UI_UE584",
+  "engine": "5.8.4",
+  "verifiedAt": "2026-11-07",
+  "blueprints": 42,
+  "widgetBlueprints": 19,
+  "nodesBefore": 3844,
+  "nodesAfter": 3496,
+  "commentBoxes": 639,
+  "staticChecks": {
+    "checks": 2042,
+    "passed": 2042
+  },
+  "maxContainerDepth": 3,
+  "expandedWidgets": 266,
+  "runtimeSuites": {
+    "feedback": {
+      "Standard": {
+        "checks": 531,
+        "passed": 531
+      },
+      "Tablet": {
+        "checks": 531,
+        "passed": 531
+      },
+      "Wide": {
+        "checks": 531,
+        "passed": 531
+      }
+    },
+    "paging": {
+      "Standard": {
+        "checks": 945,
+        "passed": 945
+      },
+      "Tablet": {
+        "checks": 945,
+        "passed": 945
+      },
+      "Wide": {
+        "checks": 945,
+        "passed": 945
+      }
+    },
+    "action": {
+      "Standard": {
+        "checks": 1183,
+        "passed": 1183
+      },
+      "Tablet": {
+        "checks": 1183,
+        "passed": 1183
+      },
+      "Wide": {
+        "checks": 1183,
+        "passed": 1183
+      }
+    }
+  },
+  "deliveryFeedback": {
+    "checks": 531,
+    "passed": 531
+  },
+  "cook": {
+    "platform": "Windows",
+    "packages": 627,
+    "remaining": 0,
+    "errors": 0,
+    "warnings": 1,
+    "warning": "LogSsl: Unable to open ROOT certificate store"
+  },
+  "limits": [
+    "节点布局采用保守包围范围检查，未执行编辑器全图逐页人工目视验收。",
+    "独立运行验证使用真实 Slate 几何、蓝图事件与原生按钮委托，未验证物理鼠标注入。",
+    "未提供 Draw Call 或帧耗时实测；节点减少不代表同比帧率提升。",
+    "Cook 已通过；此包是需 UE 编辑器运行的工程源码，不是打包可执行文件。"
+  ]
+}

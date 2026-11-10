@@ -14,6 +14,7 @@ const models={
 'door-interaction':{nodes:[node('overlap','Box Begin / EndOverlap','范围事件','进入时把门 Self 写入角色 NearbyDoor；离开时先比较是否仍是本门，再清空。',20,20),node('reference','NearbyDoor','对象引用','变量属于角色，值是门实例。网页只模拟一个当前交互对象。',330,20),node('input','IA_Interact (E)','角色输入','输入监听在角色里。Started 后先判断 NearbyDoor 是否有效。',20,230),node('valid','Is Valid → Branch','有效性判断','None 走 False，跳过开门；有效引用才允许调用门。',330,230),node('open','OpenDoor','跨蓝图调用','Target=NearbyDoor。门蓝图中的同名自定义事件负责旋转门轴。',640,230)],edges:[edge('overlap','reference','data','门实例 / None'),edge('reference','valid','data','Object'),edge('input','valid','exec','Started'),edge('valid','open','exec','True')]},
 'health-ui':{nodes:[node('create','Create / 保存 HUDRef','初始化','角色创建 WBP_HUD，保存返回值、Add to Viewport，并首次调用 UpdateHP。',20,20),node('health','Set CurrentHealth','角色写入','先完成生命状态写入，再触发 UI 更新，不使用每帧属性绑定。',20,230),node('update','UpdateHP','主动传值','HUDRef 有效时，传入 CurrentHealth 与 MaxHealth。Widget 不反向读取角色。',330,130),node('ratio','Max>0 → Current / Max','纯数据 + 分支','MaxHealth>0 才计算比例并 Clamp 到 0～1；否则直接显示 0。',640,130),node('percent','Set Percent','控件调用','Target=HPBar，In Percent 是 0～1。75/100=0.75，而不是 75。',640,320)],edges:[edge('create','update','exec','首刷'),edge('health','update','exec','变化后刷新'),edge('update','ratio','data','两个 Float'),edge('ratio','percent','data','安全比例')]}
 };
+Object.assign(models,window.BLUEPRINT_GRAPH_MODELS||{});
 let currentGraph;
 function mountGraph(root,id){
 if(currentGraph)currentGraph.stop();
